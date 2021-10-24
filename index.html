@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html>
+<!--
+    Style and Script tags are written into this document for 
+    convenience of sending one file, instead of many.
+    As well as for the user to easily run the app.
+-->
+
+<!-- Also fyi this code is absolute tresh. -->
+
+<head>
+
+    <!-- Metadata -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name = "viewport" content = "width = device-width, initial-scale =
+    1.0, maximum-scale = 1.0, minimum-scale = 1.0, user-scalable = 0,
+    minimal-ui" />
+    <title>Rock Paper Scissors</title>
+
+    <!-- Styling -->
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+
+
+        body, html { 
+                background-color: #015817;
+                font-family: sans-serif;
+                font-size: 24px;
+                font-weight: 700; 
+                color: white;
+            }
+
+        main {
+            display: grid;
+            place-items: center;
+        }
+
+        #play-container, #hand-container, #confirmation-container {
+            background-color: rgba(0,0,0,10%);
+            margin-top: 20px;
+            width: 90%;
+            max-width: 960px;
+        }
+
+        /*Rules for the top main container*/
+
+            #text-container {
+                height: 90px;
+                text-align: center;
+                line-height: 90px;
+                display: flex;
+            }
+            
+            #text-container div {
+                width: 33%;
+                margin: 0 .167%;
+            }
+
+            #score {
+                font-size: 1.5em;
+            }
+
+            #text-container .player {
+                color:dodgerblue;
+            }
+
+            #text-container .opponent {
+                color: orangered;
+            }
+
+            #card-container {
+                display: flex;
+                justify-content: space-around;
+                margin-top: 10px;
+                height: 200px;
+                padding-bottom: 20px;
+            }
+
+            /*#card-container {
+                display: none;
+            }*/
+
+            /*#card-container .player {
+                visibility: hidden;
+            }*/
+
+            #message {
+                text-align: center;
+            }
+
+        /*Rules for the bottom main container*/
+
+            #hand-container, #confirmation-container {
+                height: 200px;
+                display: flex;
+                justify-content: space-around;
+                padding-top: 20px;
+                padding-bottom: 20px;
+            }
+
+            #hand-container .card.rock, #hand-container .card.paper, #hand-container .card.scissors {
+                cursor: pointer;
+            }
+
+        /*Rules for hidden confirmation container*/
+
+            #cancel-button, #confirm-button, #reset-button  {
+                margin-top: 85px;
+                width: 148px;
+                height: 48px;
+                border: 1px solid black;
+                text-align: center;
+                line-height: 48px;
+                font-weight: 400;
+                color: black;
+                cursor: pointer;
+            }
+
+            #cancel-button {
+                background-color:firebrick;
+            }
+
+            #confirm-button {
+                background-color: limegreen;
+            }
+
+        /*Rules for message*/
+
+        #message {
+            margin-top: 20px;
+        }
+
+        #reset-button {
+            margin-top: 20px;
+            background-color: darkorchid;
+        }
+
+        /*General rules */
+
+            .card {
+                background-color: darkorchid;
+                height: 198px;
+                width: 148px;
+                border: 1px solid black;
+                border-radius: 2px;
+                background-size: 150px;
+                background-position: center;
+                background-repeat: no-repeat;
+            } 
+
+            
+
+            .card.rock {
+                background-color: red;
+                background-image: url('https://jowaynejosephs.github.io/Rock-Paper-Scissors/img/rock.png');
+            }
+            
+            .card.paper {
+                background-color: yellow;
+                background-image: url('https://www3.bostonglobe.com//rw/Boston/2011-2020/WebGraphics/Metro/BostonGlobe.com/2018/05/rockpaperscissors/assets/paper--left.png');
+            }
+
+            .card.scissors {
+                background-color: blue;
+                background-image: url('https://jowaynejosephs.github.io/Rock-Paper-Scissors/img/scissors.png');
+            }
+
+            .skull {
+                background-image: url('https://svgsilh.com/png-512/2029570.png');
+            }
+
+
+
+        
+
+    </style>
+
+</head>
+
+<body>
+    <!-- Main bulk of the html tags and elements to be rendered -->
+    <main>
+
+        <!-- Top container where the score is recorded and card are set to play. -->
+        <div id='play-container'>
+
+            <!-- Holds the Player and Opponent text at the top of this container with the score in the middle -->
+            <div id='text-container'>
+                <div class='player'>Player</div>
+                <div id='score'><span id='score-player' class='player'>0</span> - <span id='score-opponent' class='opponent'>0</span></div>
+                <div class='opponent'>Opponent</div>
+            </div>
+
+            <!-- Area where the cards will be set -->
+            <div id='card-container'>
+                <div id='played-player' class='card player'></div>
+                <div id='played-opponent' class='card opponent'></div>    
+            </div>
+
+        </div> <!-- END: #player-container -->
+
+        <!-- Bottom container where the player's hand is displayed, a confirmation and cancel button -->
+        <div id='hand-container'>
+            <div id='card1' class='card rock'></div>
+            <div id='card2' class='card paper'></div>
+            <div id='card3' class='card scissors'></div>
+        </div> <!-- END: #hand-container -->
+        <!-- This shows once the player selects a card and renders a small window to let the player confirm their choice -->
+        <div id='confirmation-container'>
+            <div id='cancel-button'>Cancel</div>
+            <div id='selected-card' class='card'></div>
+            <div id='confirm-button'>Confirm</div>
+        </div>
+
+        <!-- Message showing whether the player wins or not-->
+        <div id='message'></div>
+        <div id='reset-button'>Try again?</div>
+        </audio>
+    </main> <!-- END: <main> -->
+
+
+
+    <!-- Logic of the game -->
+    <script>
+        //AI Selector
+        function aiChoice() {
+            return Math.floor(Math.random() * 3);   
+        } 
+
+        //Compare
+        function comparison(resultA, resultB) {
+            /*
+                Takes two ints and returns an int that defines the result of the comparison
+                1: Win ; 0: Tie ; -1: Loss;
+                The ints used as an argument are based off one of the 3 choices.
+                0 = Rock
+                1 = Paper
+                2 = Scissors
+            */
+            let versus = [2,0,1]
+            if (resultA == resultB) {
+                return 0;
+            } else if (versus[resultA] == resultB) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
+
+        //Result
+        function gameResult(state) {
+            if (state == 1) {
+            console.log('Win');
+            } else if (state == 0) {
+            console.log('Tie');
+            } else {
+            console.log('Lose');
+            }
+        }
+        
+    </script> <!-- END: <script> -->
+
+    <!-- DOM Scripts -->
+    <script>
+
+        //Document Element Variables
+        let scorePlayer = document.getElementById('score-player');
+        let scoreOpponent = document.getElementById('score-opponent');
+        let containerPlay = document.getElementById('card-container');
+        let cardPlayer = document.getElementById('played-player');
+        let cardOpponent = document.getElementById('played-opponent');
+        let gameMessage = document.getElementById('message');
+        let containerHand = document.getElementById('hand-container');
+        let handFirst = document.getElementById('card1');
+        let handSecond = document.getElementById('card2');
+        let handThird = document.getElementById('card3');
+        let containerConfirmation = document.getElementById('confirmation-container');
+        let buttonCancel = document.getElementById('cancel-button');
+        let buttonConfirm = document.getElementById('confirm-button');
+        let selectedCard = document.getElementById('selected-card');
+        let buttonReset = document.getElementById('reset-button');
+        let changeBody = document.body;
+
+        //Game Global Variables
+        let gameScore = [0,0]
+        let cardIndex;
+        let opponentCardIndex;
+        let types = ['rock', 'paper', 'scissors'];
+
+        function endGame() {
+            let colorRed = (gameScore[1] - 7)*15
+            if (gameScore[1] > gameScore[0] && gameScore[1] > 9){
+                gameMessage.innerHTML = "You can't win..";
+                gameMessage.style.color = 'red';
+            }
+            if (gameScore[1] >= 20) {
+                changeBody.innerHTML = "<img src='https://i.ytimg.com/vi/rNkymNncpJc/maxresdefault.jpg' width='100%'>";
+            }
+            changeBody.style.height = '1080px';
+            changeBody.style.backgroundColor = 'rgb('+colorRed+', 88, 23)';
+
+        }
+
+        //This function sets everything to it's defaults
+        function gameDefaults() {
+            console.log('Reset'); //Just to log the reset for now
+
+            //Defaults for script
+            cardIndex = undefined;
+            opponentCardIndex;
+
+            //Defaults for document body
+            containerPlay.style.display = 'none';
+            containerHand.style.display = '';
+            containerConfirmation.style.display = 'none';
+            gameMessage.innerHTML = 'Select a Card!';
+            buttonReset.style.display = 'none';
+
+            cardPlayer.classList.remove('rock');
+            cardPlayer.classList.remove('paper');
+            cardPlayer.classList.remove('scissors');
+            cardOpponent.classList.remove('rock');
+            cardOpponent.classList.remove('paper');
+            cardOpponent.classList.remove('scissors');
+            selectedCard.classList.remove('rock');
+            selectedCard.classList.remove('paper');
+            selectedCard.classList.remove('scissors');
+            endGame();
+        }
+
+        
+
+        //Event Handler Functions
+
+        function updateScore(array) {
+            scorePlayer.innerHTML = gameScore[0];
+            scoreOpponent.innerHTML = gameScore[1];
+        }
+
+
+        //Function when the player chooses one of the three cards
+        function cardSelect(event) {
+            let choice = event.target.id;
+
+            let selection = ['card1', 'card2', 'card3'];
+            cardIndex = selection.indexOf(choice);
+            
+            selectedCard.classList.add(types[cardIndex]);
+
+            containerHand.style.display = 'none';
+            containerConfirmation.style.display = '';
+            gameMessage.innerHTML = 'Are you sure this is the card you want?';
+            endGame();
+        }
+
+        //When click the cancel button
+        function cancelSelect(event) {
+            containerHand.style.display = '';
+            containerConfirmation.style.display = 'none';
+            gameMessage.innerHTML = 'Select a Card!';
+
+            selectedCard.classList.remove('rock');
+            selectedCard.classList.remove('paper');
+            selectedCard.classList.remove('scissors');
+            endGame();
+        }
+
+
+        //When clicking the confirm button
+        function confirmSelect() {
+            if (gameScore[0] < 3) {
+                let babyArray = [2,0,1];
+                opponentCardIndex = babyArray[cardIndex];
+            } else if (gameScore[0] > 6) {
+                let cheatArray = [1,2,0];
+                opponentCardIndex = cheatArray[cardIndex];
+            } else {
+                opponentCardIndex = aiChoice();
+            }
+            
+            containerConfirmation.style.display = 'none';
+            containerPlay.style.display = '';
+            cardPlayer.classList.add(types[cardIndex]);
+            cardOpponent.classList.add(types[opponentCardIndex]);
+            let matchResult = comparison(cardIndex,opponentCardIndex);
+            gameResult(matchResult);
+            if (matchResult == 1) {
+                gameScore[0]++;
+                gameMessage.innerHTML = 'You win!';
+            } else if (matchResult == -1) {
+                gameScore[1]++;
+                gameMessage.innerHTML = 'You lose..';
+            } else if (matchResult == 0) {
+                gameMessage.innerHTML = 'Tied?';
+            }
+            updateScore(gameScore);
+            if (gameScore[0] == 3 && matchResult == 1) {
+                gameMessage.innerHTML = "Wow you're doing great!!";
+            }
+            endGame();
+
+            buttonReset.style.display = '';
+        }
+
+        //Event Handlers
+        handFirst.onclick = cardSelect;
+        handSecond.onclick = cardSelect;
+        handThird.onclick = cardSelect;
+
+        buttonCancel.onclick = cancelSelect;
+        buttonConfirm.onclick = confirmSelect;
+
+        buttonReset.onclick = gameDefaults;
+        
+        gameDefaults();
+        gameMessage.innerHTML += " Try to get to <u style='color: cyan;'>20</u> points!";
+
+        
+    </script> <!-- END: <script> -->
+
+</body>
+</html>
+
+<!-- ############ -->
+<!-- Review Notes -->
+<!-- ############ -->
+
+<!--
+    STYLING
+    MEDIA QUERYS
+    VARIABLE AND ATTRIBUTE NAMING
+        Make the variables and attributes work with each other better. When making the logic for the game, 
+        instead of using integers to define rock, paper, and scissors, they should be self defined to avoid 
+        confusion and to add consistency. Making code readable without relying on comments is probably more recommended. 
+        Comments should be still used to explain how a function should opperate, and such.
+    ID AND CLASS ORGINIZATION
+    COMMENTS
+
+
+
+-->
